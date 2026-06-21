@@ -18,11 +18,14 @@ public class WebClientConfig { // It should point to EmployeeClient
     }
 
     @Bean
-    public EmployeeClient employeeClient(WebClient.Builder builder) {
-        WebClient webClient = builder.baseUrl("http://EMPLOYEE-SERVICE").build();
+    EmployeeClient employeeClient(WebClient.Builder webClientBuilder) {
+
+        WebClient webClient = webClientBuilder.baseUrl("http://employee-service").build();
+
         HttpServiceProxyFactory factory = HttpServiceProxyFactory
                 .builderFor(WebClientAdapter.create(webClient))
                 .build();
+
         return factory.createClient(EmployeeClient.class);
     }
 
