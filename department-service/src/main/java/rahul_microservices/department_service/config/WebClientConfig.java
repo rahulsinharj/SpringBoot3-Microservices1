@@ -1,7 +1,6 @@
 package rahul_microservices.department_service.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.reactive.LoadBalancedExchangeFilterFunction;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,6 +11,22 @@ import rahul_microservices.department_service.client.EmployeeClient;
 @Configuration
 public class WebClientConfig { // It should point to EmployeeClient
 
+    @Bean
+    @LoadBalanced
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
+    }
+
+    @Bean
+    public EmployeeClient employeeClient(WebClient.Builder builder) {
+        WebClient webClient = builder.baseUrl("http://EMPLOYEE-SERVICE").build();
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory
+                .builderFor(WebClientAdapter.create(webClient))
+                .build();
+        return factory.createClient(EmployeeClient.class);
+    }
+
+/*
     @Autowired
     private LoadBalancedExchangeFilterFunction loadBalancedExchangeFilterFunction;
 
@@ -33,5 +48,5 @@ public class WebClientConfig { // It should point to EmployeeClient
 
         return httpServiceProxyFactory.createClient(EmployeeClient.class);
     }
-
+*/
 }
